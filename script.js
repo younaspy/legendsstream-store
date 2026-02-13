@@ -1,114 +1,165 @@
 /**
- * script.js
+ * script.js - النسخة المحسنة
  * ملف الجافاسكريبت الرئيسي لمتجر legendsstream
- * يحتوي على جميع وظائف الصفحة الرئيسية والتفاعلات
  */
 
-// ==================== تهيئة الصفحة ====================
+// ==================== التهيئة ====================
 document.addEventListener('DOMContentLoaded', () => {
     initializePage();
     setupEventListeners();
     loadInitialData();
     startCountdown();
     animateStars();
+    initializeSmoothInteractions();
 });
 
-// ==================== التهيئة ====================
-function initializePage() {
-    // إنشاء النجوم المتحركة
-    createStars();
-    
-    // تحميل البيانات من Local Storage
-    loadOffers();
-    loadPosters();
-    loadLivePurchases();
-    loadTestimonials();
-    loadFaqs();
-    
-    // تحديث العملة
-    updateCurrencyDisplay();
-    
-    // تفعيل التمرير السلس
-    setupSmoothScroll();
+// ==================== التهيئة المحسنة ====================
+function initializeSmoothInteractions() {
+    // تحسين أداء التمرير
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start',
+                    inline: 'nearest'
+                });
+            }
+        });
+    });
+
+    // إضافة تأثيرات hover سلسة
+    addSmoothHoverEffects();
 }
 
-function createStars() {
-    const starsContainer = document.getElementById('stars');
-    if (!starsContainer) return;
-    
-    for (let i = 0; i < 100; i++) {
-        const star = document.createElement('div');
-        star.style.position = 'absolute';
-        star.style.left = Math.random() * 100 + '%';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.width = Math.random() * 3 + 'px';
-        star.style.height = star.style.width;
-        star.style.background = 'white';
-        star.style.borderRadius = '50%';
-        star.style.animation = `twinkling ${Math.random() * 3 + 2}s linear infinite`;
-        star.style.opacity = Math.random();
-        starsContainer.appendChild(star);
-    }
-}
-
-function animateStars() {
-    const stars = document.querySelectorAll('#stars div');
-    stars.forEach(star => {
-        setInterval(() => {
-            star.style.opacity = Math.random();
-        }, Math.random() * 3000 + 2000);
+function addSmoothHoverEffects() {
+    const cards = document.querySelectorAll('.offer-card, .poster-item, .testimonial-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+            card.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
     });
 }
 
-// ==================== تحميل البيانات ====================
-function loadInitialData() {
-    // التأكد من وجود البيانات في Local Storage
-    if (!localStorage.getItem('legendsstream_offers')) {
-        initializeDefaultData();
+// ==================== معالجة الطلبات المحسنة ====================
+window.handleOrder = function(offerId) {
+    const offers = JSON.parse(localStorage.getItem('legendsstream_offers')) || [];
+    const settings = JSON.parse(localStorage.getItem('legendsstream_settings')) || {
+        whatsappNumber: '213675647764',
+        whatsappMessage: 'مرحباً، أريد شراء [OFFER_NAME] بسعر [OFFER_PRICE] دج من متجر legendsstream.'
+    };
+    
+    const offer = offers.find(o => o.id === offerId);
+    if (!offer) {
+        showNotification('❌ العرض غير متاح', 'error');
+        return;
+    }
+
+    // إظهار تأثير التحميل
+    showLoadingEffect(offerId);
+    
+    // تأخير بسيط لإظهار تأثير التحميل
+    setTimeout(() => {
+        // تحضير رسالة واتساب
+        let message = settings.whatsappMessage
+            .replace('[OFFER_NAME]', offer.name)
+            .replace('[OFFER_PRICE]', offer.price);
+        
+        // توجيه إلى واتساب
+        const whatsappUrl = `https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        // إزالة تأثير التحميل
+        removeLoadingEffect(offerId);
+        
+        // تسجيل الطلب
+        recordOrder(offer);
+        
+        // إظهار إشعار نجاح
+        showNotification(`✅ تم تحويلك إلى واتساب لشراء ${offer.name}`, 'success');
+    }, 500);
+};
+
+function showLoadingEffect(offerId) {
+    const button = document.querySelector(`.offer-card[data-id="${offerId}"] .offer-btn`);
+    if (button) {
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
+        button.disabled = true;
+        button.style.opacity = '0.8';
+        button.style.cursor = 'wait';
     }
 }
 
-function initializeDefaultData() {
-    const defaultOffers = [
-        {
-            id: 'offer1',
-            icon: '🥉',
-            name: 'BASIC',
-            price: 1000,
-            duration: 'شهر واحد',
-            features: ['4K بريميوم', '4 أجهزة'],
-            color: 'bronze',
-            active: true,
-            isVip: false
-        },
-        {
-            id: 'offer2',
-            icon: '🥈',
-            name: 'PREMIUM',
-            price: 1500,
-            duration: 'شهران',
-            features: ['4K بريميوم', '4 أجهزة'],
-            color: 'silver',
-            active: true,
-            isVip: false
-        },
-        {
-            id: 'offer3',
-            icon: '👑',
-            name: 'VIP ROYAL',
-            price: 2500,
-            duration: '3 أشهر',
-            features: ['4K بريميوم VIP', '4 أجهزة', 'دعم VIP'],
-            color: 'gold',
-            active: true,
-            isVip: true
-        }
-    ];
-    
-    localStorage.setItem('legendsstream_offers', JSON.stringify(defaultOffers));
+function removeLoadingEffect(offerId) {
+    const button = document.querySelector(`.offer-card[data-id="${offerId}"] .offer-btn`);
+    if (button) {
+        button.innerHTML = '<i class="fab fa-whatsapp"></i> اطلب عبر واتساب';
+        button.disabled = false;
+        button.style.opacity = '1';
+        button.style.cursor = 'pointer';
+    }
 }
 
-// ==================== عرض العروض ====================
+function showNotification(message, type = 'success') {
+    // إنشاء عنصر الإشعار
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    
+    // تحديد الأيقونة حسب النوع
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    const bgColor = type === 'success' ? '#4CAF50' : '#f44336';
+    
+    notification.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <span>${message}</span>
+    `;
+    
+    // تنسيق الإشعار المحسن
+    notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: ${bgColor};
+        color: white;
+        padding: 15px 30px;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        direction: rtl;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // إظهار الإشعار بحركة سلسة
+    setTimeout(() => {
+        notification.style.transform = 'translateX(-50%) translateY(0)';
+        notification.style.opacity = '1';
+    }, 100);
+    
+    // إخفاء الإشعار بعد 3 ثوان
+    setTimeout(() => {
+        notification.style.transform = 'translateX(-50%) translateY(100px)';
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
+
+// ==================== تحسين عرض العروض ====================
 function loadOffers() {
     const offersGrid = document.getElementById('offersGrid');
     if (!offersGrid) return;
@@ -117,12 +168,19 @@ function loadOffers() {
     const settings = JSON.parse(localStorage.getItem('legendsstream_settings')) || { usdRate: 236 };
     
     offersGrid.innerHTML = '';
+    offersGrid.style.opacity = '0';
     
-    offers.filter(offer => offer.active).forEach(offer => {
-        const usdPrice = (offer.price / settings.usdRate).toFixed(2);
-        const card = createOfferCard(offer, usdPrice);
-        offersGrid.appendChild(card);
-    });
+    setTimeout(() => {
+        offers.filter(offer => offer.active).forEach((offer, index) => {
+            const usdPrice = (offer.price / settings.usdRate).toFixed(2);
+            const card = createOfferCard(offer, usdPrice);
+            card.style.animation = `fadeInUp 0.5s ease ${index * 0.1}s forwards`;
+            card.style.opacity = '0';
+            offersGrid.appendChild(card);
+        });
+        
+        offersGrid.style.opacity = '1';
+    }, 100);
 }
 
 function createOfferCard(offer, usdPrice) {
@@ -152,123 +210,7 @@ function createOfferCard(offer, usdPrice) {
     return card;
 }
 
-// ==================== معالجة الطلبات ====================
-window.handleOrder = function(offerId) {
-    const offers = JSON.parse(localStorage.getItem('legendsstream_offers')) || [];
-    const settings = JSON.parse(localStorage.getItem('legendsstream_settings')) || {
-        whatsappNumber: '213675647764',
-        whatsappMessage: 'مرحباً، أريد شراء [OFFER_NAME] بسعر [OFFER_PRICE] دج من متجر legendsstream.'
-    };
-    
-    const offer = offers.find(o => o.id === offerId);
-    if (!offer) return;
-    
-    // تحضير رسالة واتساب
-    let message = settings.whatsappMessage
-        .replace('[OFFER_NAME]', offer.name)
-        .replace('[OFFER_PRICE]', offer.price);
-    
-    // توجيه إلى واتساب
-    const whatsappUrl = `https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-    
-    // تسجيل الطلب
-    recordOrder(offer);
-};
-
-function recordOrder(offer) {
-    const orders = JSON.parse(localStorage.getItem('legendsstream_orders')) || [];
-    
-    const newOrder = {
-        id: 'order_' + Date.now(),
-        customer: 'زبون جديد',
-        offer: offer.name,
-        price: offer.price,
-        time: 'الآن',
-        timestamp: Date.now()
-    };
-    
-    orders.push(newOrder);
-    localStorage.setItem('legendsstream_orders', JSON.stringify(orders));
-    
-    // تحديث الإحصائيات
-    updateStats();
-    
-    // تحديث آخر المشتريات
-    loadLivePurchases();
-    
-    // إظهار إشعار
-    showNotification(`✅ تم تسجيل طلب ${offer.name}`);
-}
-
-function updateStats() {
-    const orders = JSON.parse(localStorage.getItem('legendsstream_orders')) || [];
-    
-    const stats = {
-        totalOrders: orders.length,
-        totalSales: orders.reduce((sum, order) => sum + order.price, 0),
-        topSelling: calculateTopSelling(orders)
-    };
-    
-    localStorage.setItem('legendsstream_stats', JSON.stringify(stats));
-}
-
-function calculateTopSelling(orders) {
-    const offerCounts = {};
-    orders.forEach(order => {
-        offerCounts[order.offer] = (offerCounts[order.offer] || 0) + 1;
-    });
-    
-    let topOffer = null;
-    let maxCount = 0;
-    
-    for (const [offer, count] of Object.entries(offerCounts)) {
-        if (count > maxCount) {
-            maxCount = count;
-            topOffer = offer;
-        }
-    }
-    
-    return topOffer || '-';
-}
-
-function showNotification(message) {
-    // إنشاء عنصر الإشعار
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.innerHTML = `
-        <i class="fas fa-check-circle"></i>
-        <span>${message}</span>
-    `;
-    
-    // تنسيق الإشعار
-    notification.style.position = 'fixed';
-    notification.style.bottom = '20px';
-    notification.style.left = '50%';
-    notification.style.transform = 'translateX(-50%)';
-    notification.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
-    notification.style.color = 'white';
-    notification.style.padding = '15px 30px';
-    notification.style.borderRadius = '50px';
-    notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
-    notification.style.zIndex = '1000';
-    notification.style.animation = 'slideUp 0.3s ease';
-    notification.style.display = 'flex';
-    notification.style.alignItems = 'center';
-    notification.style.gap = '10px';
-    
-    document.body.appendChild(notification);
-    
-    // إزالة الإشعار بعد 3 ثوان
-    setTimeout(() => {
-        notification.style.animation = 'slideDown 0.3s ease';
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 3000);
-}
-
-// ==================== معرض البوسترات ====================
+// ==================== تحسين معرض البوسترات ====================
 function loadPosters() {
     const postersSlider = document.getElementById('postersSlider');
     if (!postersSlider) return;
@@ -276,119 +218,123 @@ function loadPosters() {
     const posters = JSON.parse(localStorage.getItem('legendsstream_posters')) || [];
     
     postersSlider.innerHTML = '';
+    postersSlider.style.scrollBehavior = 'smooth';
     
-    posters.forEach(poster => {
+    posters.forEach((poster, index) => {
         const posterItem = document.createElement('div');
         posterItem.className = 'poster-item';
+        posterItem.style.animation = `slideIn 0.5s ease ${index * 0.1}s forwards`;
+        posterItem.style.opacity = '0';
         posterItem.innerHTML = `
             <img src="${poster.url}" alt="${poster.title}" loading="lazy" onload="this.classList.add('loaded')">
         `;
         postersSlider.appendChild(posterItem);
     });
+    
+    // إضافة أزرار التنقل للمعرض
+    addPosterNavigation();
 }
 
-// ==================== آخر المشتريات الحية ====================
-function loadLivePurchases() {
-    const purchasesTicker = document.getElementById('purchasesTicker');
-    if (!purchasesTicker) return;
+function addPosterNavigation() {
+    const postersSection = document.querySelector('.posters-section');
+    const postersSlider = document.getElementById('postersSlider');
     
-    const orders = JSON.parse(localStorage.getItem('legendsstream_orders')) || [];
+    // إزالة الأزرار القديمة إن وجدت
+    const oldNav = document.querySelector('.poster-nav');
+    if (oldNav) oldNav.remove();
     
-    // أخذ آخر 5 طلبات
-    const recentOrders = orders.slice(-5).reverse();
+    const navButtons = document.createElement('div');
+    navButtons.className = 'poster-nav';
+    navButtons.style.cssText = `
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    `;
     
-    let tickerContent = '<div class="purchases-ticker-content">';
+    navButtons.innerHTML = `
+        <button class="poster-nav-btn" id="posterPrev" style="background: var(--primary-red); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; transition: all 0.3s;">
+            <i class="fas fa-chevron-right"></i> السابق
+        </button>
+        <button class="poster-nav-btn" id="posterNext" style="background: var(--primary-red); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; transition: all 0.3s;">
+            التالي <i class="fas fa-chevron-left"></i>
+        </button>
+    `;
     
-    recentOrders.forEach(order => {
-        tickerContent += `
-            <span class="purchase-item">
-                <i class="fas fa-circle" style="color: #4CAF50; font-size: 8px;"></i>
-                ${order.customer || 'زبون'} اشترى ${order.offer} ${order.time}
-            </span>
-        `;
+    postersSection.appendChild(navButtons);
+    
+    // إضافة وظائف الأزرار
+    document.getElementById('posterPrev').addEventListener('click', () => {
+        postersSlider.scrollBy({ left: -300, behavior: 'smooth' });
     });
     
-    tickerContent += '</div>';
-    purchasesTicker.innerHTML = tickerContent;
+    document.getElementById('posterNext').addEventListener('click', () => {
+        postersSlider.scrollBy({ left: 300, behavior: 'smooth' });
+    });
+}
+
+// ==================== تحسين قائمة الهاتف ====================
+function setupMobileMenu() {
+    const menuToggle = document.getElementById('menuToggle');
+    const navItems = document.getElementById('navItems');
+    const overlay = document.createElement('div');
     
-    // إضافة نسخة مكررة للتمرير المستمر
-    setTimeout(() => {
-        if (purchasesTicker.firstChild) {
-            const clone = purchasesTicker.firstChild.cloneNode(true);
-            purchasesTicker.appendChild(clone);
+    if (!menuToggle || !navItems) return;
+    
+    // إنشاء طبقة تغطية للخلفية
+    overlay.className = 'menu-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 98;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    document.body.appendChild(overlay);
+    
+    menuToggle.addEventListener('click', () => {
+        navItems.classList.toggle('active');
+        
+        if (navItems.classList.contains('active')) {
+            overlay.style.display = 'block';
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        } else {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+            document.body.style.overflow = '';
         }
-    }, 100);
-}
-
-// ==================== آراء الزبائن ====================
-function loadTestimonials() {
-    const testimonialsGrid = document.getElementById('testimonialsGrid');
-    if (!testimonialsGrid) return;
+    });
     
-    const defaultTestimonials = [
-        { id: 'test1', name: 'محمد', text: 'خدمة خرافية', stars: 5 },
-        { id: 'test2', name: 'سارة', text: 'أفضل متجر', stars: 5 },
-        { id: 'test3', name: 'يوسف', text: 'العرض الذهبي يستاهل', stars: 5 }
-    ];
+    overlay.addEventListener('click', () => {
+        navItems.classList.remove('active');
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 300);
+        document.body.style.overflow = '';
+    });
     
-    testimonialsGrid.innerHTML = '';
-    
-    defaultTestimonials.forEach(testimonial => {
-        const card = document.createElement('div');
-        card.className = 'testimonial-card';
-        
-        const stars = '★'.repeat(testimonial.stars) + '☆'.repeat(5 - testimonial.stars);
-        
-        card.innerHTML = `
-            <div class="testimonial-stars">${stars}</div>
-            <div class="testimonial-text">"${testimonial.text}"</div>
-            <div class="testimonial-author">- ${testimonial.name}</div>
-        `;
-        
-        testimonialsGrid.appendChild(card);
+    // تحسين للشاشات الأكبر
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 767) {
+            navItems.classList.remove('active');
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+        }
     });
 }
 
-// ==================== الأسئلة الشائعة ====================
-function loadFaqs() {
-    const faqContainer = document.getElementById('faqContainer');
-    if (!faqContainer) return;
-    
-    const defaultFaqs = [
-        { id: 'faq1', question: '❓ كيف أستلم الحساب؟', answer: 'بعد الدفع، سيتم إرسال بيانات الحساب عبر واتساب فوراً.' },
-        { id: 'faq2', question: '❓ هل يوجد ضمان؟', answer: 'نعم، ضمان لمدة شهر كامل ضد أي مشكلة.' },
-        { id: 'faq3', question: '❓ ماذا لو واجهت مشكلة؟', answer: 'تواصل مع الدعم الفني عبر واتساب وسيتم حل المشكلة فوراً.' },
-        { id: 'faq4', question: '❓ كم جهاز مسموح؟', answer: 'يمكنك استخدام الحساب على 4 أجهزة في نفس الوقت.' },
-        { id: 'faq5', question: '❓ هل أستطيع تغيير كلمة السر؟', answer: 'لا، يمنع تغيير كلمة السر للحفاظ على الضمان.' }
-    ];
-    
-    faqContainer.innerHTML = '';
-    
-    defaultFaqs.forEach(faq => {
-        const item = document.createElement('div');
-        item.className = 'faq-item';
-        item.innerHTML = `
-            <div class="faq-question">
-                <i class="fas fa-question-circle"></i>
-                ${faq.question}
-                <i class="fas fa-chevron-down" style="margin-right: auto;"></i>
-            </div>
-            <div class="faq-answer">${faq.answer}</div>
-        `;
-        
-        item.addEventListener('click', () => {
-            item.classList.toggle('active');
-            const icon = item.querySelector('.fa-chevron-down');
-            if (icon) {
-                icon.style.transform = item.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
-            }
-        });
-        
-        faqContainer.appendChild(item);
-    });
-}
-
-// ==================== العداد التنازلي ====================
+// ==================== تحسين العداد التنازلي ====================
 function startCountdown() {
     const countdownTimer = document.getElementById('countdownTimer');
     const vipCount = document.getElementById('vipCount');
@@ -411,7 +357,12 @@ function startCountdown() {
             vipCount.textContent = '0';
             countdownContainer.classList.add('low-stock');
             
-            // تحديث كل دقيقة للتأكد من الدقة
+            // إضافة تأثير اهتزاز
+            countdownContainer.style.animation = 'shake 0.5s ease';
+            setTimeout(() => {
+                countdownContainer.style.animation = '';
+            }, 500);
+            
             setTimeout(updateCountdown, 60000);
             return;
         }
@@ -420,14 +371,32 @@ function startCountdown() {
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
+        // تحديث مع تأثير رقمي
+        if (countdownTimer.textContent !== `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`) {
+            countdownTimer.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                countdownTimer.style.transform = 'scale(1)';
+            }, 200);
+        }
+        
         countdownTimer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         
-        // تحديث عدد الحسابات المتبقية (يتناقص مع الوقت)
+        // تحديث عدد الحسابات المتبقية
         const remainingVIP = Math.max(0, 5 - Math.floor((24 - hours) / 4));
+        
+        if (vipCount.textContent !== remainingVIP.toString()) {
+            vipCount.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                vipCount.style.transform = 'scale(1)';
+            }, 200);
+        }
+        
         vipCount.textContent = remainingVIP;
         
         if (remainingVIP <= 2) {
             countdownContainer.classList.add('low-stock');
+        } else {
+            countdownContainer.classList.remove('low-stock');
         }
         
         // التحديث كل ثانية
@@ -437,36 +406,203 @@ function startCountdown() {
     updateCountdown();
 }
 
-// ==================== أحداث المستخدم ====================
+// ==================== إضافة تأثيرات CSS جديدة ====================
+function addCustomStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .offer-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .offer-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(229, 9, 20, 0.3);
+        }
+        
+        .offer-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .offer-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .offer-btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .poster-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .poster-item:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(229, 9, 20, 0.4);
+        }
+        
+        .vip-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .offer-badge {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .countdown-timer {
+            transition: all 0.2s ease;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+        
+        #vipCount {
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+        
+        @media (max-width: 767px) {
+            .nav-items.active {
+                position: fixed;
+                top: 80px;
+                right: 0;
+                width: 80%;
+                height: 100vh;
+                background: var(--darker-black);
+                z-index: 99;
+                padding: 30px;
+                box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+                animation: slideInRight 0.3s ease;
+                backdrop-filter: blur(10px);
+            }
+            
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                }
+                to {
+                    transform: translateX(0);
+                }
+            }
+            
+            .poster-nav {
+                position: sticky;
+                bottom: 20px;
+                background: var(--glass-bg);
+                backdrop-filter: blur(10px);
+                padding: 10px;
+                border-radius: 50px;
+                z-index: 10;
+            }
+        }
+        
+        /* تحسين التمرير */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--glass-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-red);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff0a16;
+        }
+        
+        /* تحسين النصوص */
+        h1, h2, h3, h4, h5, h6 {
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* تحسين الأداء */
+        .offer-card, .poster-item, .testimonial-card {
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+    `;
+    
+    document.head.appendChild(style);
+}
+
+// ==================== تحديث أحداث المستخدم ====================
 function setupEventListeners() {
-    // قائمة الهاتف المحمول
-    const menuToggle = document.getElementById('menuToggle');
-    const navItems = document.getElementById('navItems');
+    setupMobileMenu();
     
-    if (menuToggle && navItems) {
-        menuToggle.addEventListener('click', () => {
-            navItems.classList.toggle('active');
-        });
-    }
-    
-    // زر العودة للأعلى
+    // زر العودة للأعلى المحسن
     const backToTop = document.getElementById('backToTop');
     
     window.addEventListener('scroll', () => {
         if (window.scrollY > 300) {
             backToTop.classList.add('visible');
+            backToTop.style.transform = 'translateY(0)';
         } else {
             backToTop.classList.remove('visible');
+            backToTop.style.transform = 'translateY(100px)';
         }
-    });
+    }, { passive: true });
     
     if (backToTop) {
         backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ 
+                top: 0, 
+                behavior: 'smooth' 
+            });
         });
     }
     
-    // شريط تقدم التمرير
+    // شريط تقدم التمرير المحسن
     const scrollProgress = document.getElementById('scrollProgress');
     
     window.addEventListener('scroll', () => {
@@ -474,9 +610,35 @@ function setupEventListeners() {
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const scrolled = (winScroll / height) * 100;
         scrollProgress.style.width = scrolled + '%';
-    });
+        scrollProgress.style.opacity = scrolled > 0 ? '1' : '0';
+    }, { passive: true });
     
-    // تبديل العملة
+    // زر كتم الصوت المحسن
+    const soundToggle = document.getElementById('soundToggle');
+    if (soundToggle) {
+        soundToggle.addEventListener('click', () => {
+            const icon = soundToggle.querySelector('i');
+            if (icon.classList.contains('fa-volume-up')) {
+                icon.classList.remove('fa-volume-up');
+                icon.classList.add('fa-volume-mute');
+                soundToggle.style.background = '#f44336';
+            } else {
+                icon.classList.remove('fa-volume-mute');
+                icon.classList.add('fa-volume-up');
+                soundToggle.style.background = '';
+            }
+        });
+    }
+    
+    // إخفاء رسالة الترحيب بعد 5 ثوان
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    if (welcomeMessage) {
+        setTimeout(() => {
+            welcomeMessage.style.animation = 'slideDown 0.5s ease forwards';
+        }, 5000);
+    }
+    
+    // تبديل العملة المحسن
     const currencyItems = document.querySelectorAll('.currency-dropdown div');
     const currencyDisplay = document.getElementById('currencyDisplay');
     
@@ -489,77 +651,34 @@ function setupEventListeners() {
                 currencyDisplay.innerHTML = '🇺🇸 الدولار الأمريكي ▼';
             }
             updateCurrencyDisplay(currency);
-        });
-    });
-    
-    // زر كتم الصوت (تأثير بصري)
-    const soundToggle = document.getElementById('soundToggle');
-    if (soundToggle) {
-        soundToggle.addEventListener('click', () => {
-            const icon = soundToggle.querySelector('i');
-            if (icon.classList.contains('fa-volume-up')) {
-                icon.classList.remove('fa-volume-up');
-                icon.classList.add('fa-volume-mute');
-            } else {
-                icon.classList.remove('fa-volume-mute');
-                icon.classList.add('fa-volume-up');
-            }
-        });
-    }
-    
-    // إخفاء رسالة الترحيب بعد 5 ثوان
-    const welcomeMessage = document.getElementById('welcomeMessage');
-    if (welcomeMessage) {
-        setTimeout(() => {
-            welcomeMessage.style.animation = 'slideDown 0.5s ease forwards';
-        }, 5000);
-    }
-}
-
-function updateCurrencyDisplay(currency = 'dzd') {
-    const offers = JSON.parse(localStorage.getItem('legendsstream_offers')) || [];
-    const settings = JSON.parse(localStorage.getItem('legendsstream_settings')) || { usdRate: 236 };
-    
-    const priceElements = document.querySelectorAll('.offer-price');
-    
-    offers.forEach((offer, index) => {
-        if (priceElements[index]) {
-            const priceDZD = offer.price;
-            const priceUSD = (priceDZD / settings.usdRate).toFixed(2);
             
-            if (currency === 'dzd') {
-                priceElements[index].innerHTML = `${priceDZD} دج <small>| ${priceUSD}$</small>`;
-            } else {
-                priceElements[index].innerHTML = `${priceUSD}$ <small>| ${priceDZD} دج</small>`;
-            }
-        }
-    });
-}
-
-function setupSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
+            // إظهار إشعار
+            showNotification(`تم تغيير العملة إلى ${currency === 'dzd' ? 'الدينار الجزائري' : 'الدولار الأمريكي'}`, 'success');
         });
     });
 }
 
-// ==================== تحديث الصفحة من لوحة التحكم ====================
-window.updateMainPageOffers = function() {
-    loadOffers();
-};
-
-window.updateMainPagePosters = function() {
-    loadPosters();
-};
-
-// ==================== تصدير الدوال ====================
-window.refreshMainPage = function() {
+// ==================== التهيئة النهائية ====================
+function initializePage() {
+    // إنشاء النجوم المتحركة
+    createStars();
+    
+    // إضافة الأنماط المخصصة
+    addCustomStyles();
+    
+    // تحميل البيانات
     loadOffers();
     loadPosters();
     loadLivePurchases();
-};
+    loadTestimonials();
+    loadFaqs();
+    
+    // تحديث العملة
+    updateCurrencyDisplay();
+    
+    // إضافة تأثيرات التمرير
+    initializeSmoothInteractions();
+}
+
+// تنفيذ التهيئة
+initializePage();
