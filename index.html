@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>legendsstream - متجر حسابات نتفليكس</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- شريط تقدم التمرير -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+    
+    <!-- زر كتم الصوت (تأثير بصري فقط) -->
+    <div class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up"></i>
+    </div>
+    
+    <!-- النجوم المتحركة في الخلفية -->
+    <div class="stars" id="stars"></div>
+    <div class="twinkling"></div>
+    
+    <!-- رسالة ترحيب متحركة -->
+    <div class="welcome-message" id="welcomeMessage">
+        <i class="fas fa-gem"></i> مرحباً بك في legendsstream - أفضل متجر لحسابات نتفليكس
+    </div>
+    
+    <!-- الصفحة الرئيسية -->
+    <div class="container">
+        <!-- الشريط العلوي -->
+        <header>
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <div class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <div class="logo" id="logoTrigger">legendsstream</div>
+                </div>
+                
+                <div class="nav-items" id="navItems">
+                    <div class="currency-selector">
+                        <i class="fas fa-coins" style="color: gold;"></i>
+                        <span id="currencyDisplay">العملة ▼</span>
+                        <div class="currency-dropdown">
+                            <div data-currency="dzd">🇩🇿 الدينار الجزائري</div>
+                            <div data-currency="usd">🇺🇸 الدولار الأمريكي</div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-badge">
+                        <i class="fas fa-circle" style="color: #4CAF50; font-size: 10px;"></i>
+                        <span>الحالة: نشط</span>
+                    </div>
+                    
+                    <div class="delivery-badge">
+                        <i class="fas fa-bolt" style="color: #E50914;"></i>
+                        <span>توصيل فوري</span>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- معرض البوسترات القابل للتخصيص -->
+        <section class="posters-section">
+            <h2 class="section-title"><i class="fas fa-film"></i> أشهر المسلسلات <span class="admin-badge" id="adminPosterBadge"><i class="fas fa-crown"></i></span></h2>
+            <div class="posters-slider" id="postersSlider">
+                <!-- البوسترات ستتم إضافتها عبر الجافاسكريبت -->
+            </div>
+        </section>
+
+        <!-- العداد التنازلي -->
+        <section class="countdown-section">
+            <div class="countdown-container" id="countdownContainer">
+                <div class="countdown-text">
+                    <i class="fas fa-fire" style="color: #E50914;"></i>
+                    <span>🔥 عرض الملوك - تبقى <span id="vipCount">5</span> حسابات VIP فقط!</span>
+                </div>
+                <div class="countdown-timer" id="countdownTimer">23:15:47</div>
+            </div>
+        </section>
+
+        <!-- بطاقات العروض -->
+        <section class="offers-section">
+            <h2 class="section-title"><i class="fas fa-tags"></i> عروضنا المميزة</h2>
+            <div class="offers-grid" id="offersGrid">
+                <!-- العروض ستتم إضافتها عبر الجافاسكريبت -->
+            </div>
+        </section>
+
+        <!-- آخر المشتريات الحية -->
+        <section class="live-purchases">
+            <h2 class="section-title"><i class="fas fa-shopping-cart"></i> آخر المشتريات</h2>
+            <div class="purchases-ticker" id="purchasesTicker">
+                <!-- المشتريات ستتم إضافتها عبر الجافاسكريبت -->
+            </div>
+        </section>
+
+        <!-- آراء الزبائن -->
+        <section class="testimonials">
+            <h2 class="section-title"><i class="fas fa-star"></i> آراء الزبائن</h2>
+            <div class="testimonials-grid" id="testimonialsGrid">
+                <!-- الآراء ستتم إضافتها عبر الجافاسكريبت -->
+            </div>
+        </section>
+
+        <!-- الأسئلة الشائعة -->
+        <section class="faq">
+            <h2 class="section-title"><i class="fas fa-question-circle"></i> الأسئلة الشائعة</h2>
+            <div class="faq-container" id="faqContainer">
+                <!-- الأسئلة ستتم إضافتها عبر الجافاسكريبت -->
+            </div>
+        </section>
+
+        <!-- التنبيه الهام -->
+        <section class="important-warning">
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>⚠️ تنبيه هام: بعد الشراء، يمنع تغيير معلومات الدخول. أي تغيير يلغي الضمان.</span>
+            </div>
+        </section>
+
+        <!-- الفوتر -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>legendsstream</h3>
+                    <p>أفضل متجر لبيع حسابات نتفليكس في الجزائر والعالم العربي</p>
+                </div>
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-left"></i> الرئيسية</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-left"></i> العروض</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-left"></i> سياسة الخصوصية</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-left"></i> شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>تواصل معنا</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 legendsstream - جميع الحقوق محفوظة</p>
+            </div>
+        </footer>
+
+        <!-- زر العودة للأعلى -->
+        <div class="back-to-top" id="backToTop">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+    </div>
+
+    <!-- لوحة التحكم السرية (مخفية) -->
+    <div class="admin-panel-overlay" id="adminPanelOverlay">
+        <div class="admin-panel">
+            <div class="admin-header">
+                <h2><i class="fas fa-crown" style="color: gold;"></i> لوحة التحكم السرية</h2>
+                <button class="close-admin" id="closeAdminPanel"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <!-- تبويبات لوحة التحكم -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="offers"><i class="fas fa-tag"></i> إدارة العروض</button>
+                <button class="admin-tab" data-tab="stats"><i class="fas fa-chart-bar"></i> إحصائيات الطلبات</button>
+                <button class="admin-tab" data-tab="posters"><i class="fas fa-images"></i> إدارة البوسترات</button>
+                <button class="admin-tab" data-tab="settings"><i class="fas fa-cog"></i> إعدادات المتجر</button>
+                <button class="admin-tab" data-tab="report"><i class="fas fa-file-alt"></i> تقرير النجاح</button>
+            </div>
+            
+            <!-- محتوى التبويبات -->
+            <div class="admin-content">
+                <!-- إدارة العروض -->
+                <div class="admin-tab-content active" id="tabOffers">
+                    <div class="offers-management">
+                        <h3>إدارة العروض <button class="add-offer-btn" id="addOfferBtn"><i class="fas fa-plus"></i> إضافة عرض جديد</button></h3>
+                        
+                        <!-- نموذج إضافة/تعديل عرض -->
+                        <div class="offer-form" id="offerForm" style="display: none;">
+                            <h4 id="offerFormTitle">إضافة عرض جديد</h4>
+                            <div class="form-group">
+                                <label>اسم العرض:</label>
+                                <input type="text" id="offerName" placeholder="مثال: VIP ROYAL">
+                            </div>
+                            <div class="form-group">
+                                <label>السعر بالدينار:</label>
+                                <input type="number" id="offerPrice" placeholder="2500">
+                            </div>
+                            <div class="form-group">
+                                <label>المدة:</label>
+                                <input type="text" id="offerDuration" placeholder="مثال: 3 أشهر">
+                            </div>
+                            <div class="form-group">
+                                <label>الميزات (افصل بينها بفاصلة):</label>
+                                <textarea id="offerFeatures" placeholder="4K بريميوم، 4 أجهزة، دعم VIP"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>رمز الأيقونة:</label>
+                                <input type="text" id="offerIcon" placeholder="🥉 أو 👑">
+                            </label></div>
+                            <div class="form-group">
+                                <label>اللون المميز:</label>
+                                <select id="offerColor">
+                                    <option value="bronze">برونزي</option>
+                                    <option value="silver">فضي</option>
+                                    <option value="gold">ذهبي (الأكثر طلباً)</option>
+                                </select>
+                            </div>
+                            <div class="form-group checkbox">
+                                <label>
+                                    <input type="checkbox" id="offerActive" checked> مفعل
+                                </label>
+                            </div>
+                            <div class="form-actions">
+                                <button class="save-offer" id="saveOffer">حفظ العرض</button>
+                                <button class="cancel-offer" id="cancelOffer">إلغاء</button>
+                            </div>
+                        </div>
+                        
+                        <!-- قائمة العروض -->
+                        <div class="offers-list" id="offersList">
+                            <!-- العروض ستتم إضافتها عبر الجافاسكريبت -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- إحصائيات الطلبات -->
+                <div class="admin-tab-content" id="tabStats">
+                    <div class="stats-management">
+                        <h3>إحصائيات الطلبات</h3>
+                        
+                        <div class="stats-counters">
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                                <div class="stat-info">
+                                    <span class="stat-label">إجمالي الطلبات</span>
+                                    <span class="stat-value" id="totalOrders">0</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                                <div class="stat-info">
+                                    <span class="stat-label">إجمالي المبيعات</span>
+                                    <span class="stat-value" id="totalSales">0 دج</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                                <div class="stat-info">
+                                    <span class="stat-label">الأكثر مبيعاً</span>
+                                    <span class="stat-value" id="topSelling">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-filters">
+                            <button class="stat-filter active" data-period="daily">يومي</button>
+                            <button class="stat-filter" data-period="weekly">أسبوعي</button>
+                            <button class="stat-filter" data-period="monthly">شهري</button>
+                            <button class="export-btn" id="exportStats"><i class="fas fa-download"></i> تصدير JSON</button>
+                        </div>
+                        
+                        <div class="orders-log">
+                            <h4>سجل الطلبات</h4>
+                            <table class="orders-table" id="ordersTable">
+                                <thead>
+                                    <tr>
+                                        <th>الطلب</th>
+                                        <th>السعر</th>
+                                        <th>الوقت</th>
+                                        <th>رسالة واتساب</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersList">
+                                    <!-- الطلبات ستتم إضافتها عبر الجافاسكريبت -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- إدارة البوسترات -->
+                <div class="admin-tab-content" id="tabPosters">
+                    <div class="posters-management">
+                        <h3>إدارة معرض البوسترات</h3>
+                        
+                        <div class="upload-section">
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>اسحب وأفلت الصور هنا أو انقر للرفع</p>
+                                <input type="file" id="posterUpload" accept="image/*" multiple style="display: none;">
+                            </div>
+                            <div class="upload-preview" id="uploadPreview"></div>
+                        </div>
+                        
+                        <div class="posters-list">
+                            <h4>البوسترات الحالية</h4>
+                            <div class="posters-grid-admin" id="postersGridAdmin">
+                                <!-- البوسترات ستتم إضافتها عبر الجافاسكريبت مع خاصية السحب والإفلات -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- إعدادات المتجر -->
+                <div class="admin-tab-content" id="tabSettings">
+                    <div class="settings-management">
+                        <h3>إعدادات المتجر</h3>
+                        
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label>سعر صرف الدولار (دج):</label>
+                                <input type="number" id="usdRate" value="236" min="1">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>رسالة واتساب التلقائية:</label>
+                                <textarea id="whatsappMessage">مرحباً، أريد شراء [OFFER_NAME] بسعر [OFFER_PRICE] من متجر legendsstream.</textarea>
+                            </div>
+                            
+                            <div class="form-group checkbox">
+                                <label>
+                                    <input type="checkbox" id="seasonalColors" checked> تفعيل الألوان الموسمية
+                                </label>
+                            </div>
+                            
+                            <div class="settings-actions">
+                                <button class="reset-stats" id="resetStats"><i class="fas fa-redo-alt"></i> إعادة تعيين الإحصائيات</button>
+                                <button class="export-backup" id="exportBackup"><i class="fas fa-download"></i> تصدير نسخة احتياطية</button>
+                                <button class="import-backup" id="importBackup"><i class="fas fa-upload"></i> استيراد نسخة احتياطية</button>
+                            </div>
+                            <input type="file" id="backupFile" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- تقرير النجاح -->
+                <div class="admin-tab-content" id="tabReport">
+                    <div class="report-management">
+                        <h3>تقرير النجاح</h3>
+                        
+                        <div class="report-cards">
+                            <div class="report-card">
+                                <h4>إجمالي المبيعات التقديرية</h4>
+                                <div class="report-value" id="estimatedSales">0 دج</div>
+                            </div>
+                            <div class="report-card">
+                                <h4>زبائن جدد هذا الأسبوع</h4>
+                                <div class="report-value" id="newCustomers">0</div>
+                            </div>
+                            <div class="report-card">
+                                <h4>العرض الأكثر مبيعاً</h4>
+                                <div class="report-value" id="bestSeller">-</div>
+                            </div>
+                            <div class="report-card">
+                                <h4>أوقات الذروة</h4>
+                                <div class="report-value" id="peakHours">-</div>
+                            </div>
+                        </div>
+                        
+                        <div class="report-growth">
+                            <h4>معدل النمو مقارنة بالأسبوع الماضي</h4>
+                            <div class="growth-indicator" id="growthRate">+15%</div>
+                        </div>
+                        
+                        <div class="report-recommendations">
+                            <h4>توصيات ذكية</h4>
+                            <ul id="recommendationsList">
+                                <li><i class="fas fa-lightbulb"></i> أضف عرض 6 أشهر</li>
+                                <li><i class="fas fa-lightbulb"></i> زد سعر العرض الذهبي</li>
+                                <li><i class="fas fa-lightbulb"></i> أضف باقة عائلية</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة كلمة السر -->
+    <div class="password-overlay" id="passwordOverlay" style="display: none;">
+        <div class="password-box">
+            <h3>🔒 دخول لوحة التحكم</h3>
+            <p>الرجاء إدخال كلمة السر</p>
+            <input type="password" id="adminPassword" placeholder="كلمة السر">
+            <div class="password-actions">
+                <button id="submitPassword">دخول</button>
+                <button id="cancelPassword">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="admin-panel.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
