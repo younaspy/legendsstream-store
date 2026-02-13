@@ -1,7 +1,7 @@
 /* 
   legendsstream - متجر حسابات نتفليكس
-  ملف التنسيقات الرئيسي
-  Version: 1.0
+  ملف التنسيقات الرئيسي - النسخة المحسنة
+  Version: 2.0
 */
 
 /* متغيرات CSS */
@@ -18,7 +18,7 @@
     --glass-border: rgba(255, 255, 255, 0.1);
     --text-primary: #FFFFFF;
     --text-secondary: rgba(255, 255, 255, 0.7);
-    --transition: all 0.3s ease;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
     /* ألوان موسمية */
     --ramadan: #6B2D5C;
@@ -32,6 +32,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html {
@@ -46,6 +47,8 @@ body {
     overflow-x: hidden;
     position: relative;
     direction: rtl;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* الخلفية المتحركة بالنجوم */
@@ -103,7 +106,8 @@ body {
     height: 3px;
     background: linear-gradient(90deg, var(--primary-red), var(--gold));
     z-index: 1000;
-    transition: width 0.1s ease;
+    transition: width 0.1s ease, opacity 0.3s ease;
+    opacity: 0;
 }
 
 /* زر كتم الصوت */
@@ -345,17 +349,24 @@ body {
     cursor: pointer;
     position: relative;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 .poster-item:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(229, 9, 20, 0.4);
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 15px 30px rgba(229, 9, 20, 0.4);
 }
 
 .poster-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.poster-item:hover img {
+    transform: scale(1.1);
 }
 
 .poster-item .poster-delete {
@@ -379,6 +390,31 @@ body {
     opacity: 1;
 }
 
+/* أزرار التنقل في المعرض */
+.poster-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.poster-nav-btn {
+    background: var(--primary-red);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+}
+
+.poster-nav-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+}
+
 /* العداد التنازلي */
 .countdown-section {
     margin: 50px 0;
@@ -397,6 +433,7 @@ body {
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(229, 9, 20, 0.5);
     animation: pulse 2s ease-in-out infinite;
+    transition: all 0.3s ease;
 }
 
 @keyframes pulse {
@@ -411,6 +448,12 @@ body {
 @keyframes warningPulse {
     0%, 100% { background: linear-gradient(135deg, var(--primary-red), var(--dark-red)); }
     50% { background: linear-gradient(135deg, #ff0000, #8b0000); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
 .countdown-text {
@@ -429,6 +472,14 @@ body {
     padding: 10px 25px;
     border-radius: 50px;
     letter-spacing: 5px;
+    transition: all 0.2s ease;
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+}
+
+#vipCount {
+    transition: all 0.2s ease;
+    display: inline-block;
 }
 
 /* بطاقات العروض */
@@ -449,6 +500,8 @@ body {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 .offer-card::before {
@@ -464,8 +517,8 @@ body {
 }
 
 .offer-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 30px rgba(229, 9, 20, 0.3);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(229, 9, 20, 0.3);
 }
 
 .offer-card:hover::before {
@@ -538,12 +591,43 @@ body {
     transition: var(--transition);
     width: 100%;
     font-family: 'Cairo', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.offer-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    z-index: 0;
+}
+
+.offer-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.offer-btn span, .offer-btn i {
+    position: relative;
+    z-index: 1;
 }
 
 .offer-btn:hover {
     background: #ff0a16;
     transform: scale(1.05);
     box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+}
+
+.offer-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .offer-badge {
@@ -556,6 +640,7 @@ body {
     border-radius: 25px;
     font-size: 14px;
     font-weight: 700;
+    animation: pulse 2s ease-in-out infinite;
 }
 
 .offer-status {
@@ -630,11 +715,12 @@ body {
     padding: 20px;
     text-align: center;
     transition: var(--transition);
+    will-change: transform;
 }
 
 .testimonial-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(229, 9, 20, 0.2);
+    box-shadow: 0 10px 30px rgba(229, 9, 20, 0.2);
 }
 
 .testimonial-stars {
@@ -673,7 +759,7 @@ body {
 }
 
 .faq-item:hover {
-    background: rgba(229, 9, 20, 0.1);
+    background: rgba(229, 9, 20, 0.15);
 }
 
 .faq-question {
@@ -824,16 +910,18 @@ footer {
     transition: var(--transition);
     opacity: 0;
     visibility: hidden;
+    transform: translateY(100px);
 }
 
 .back-to-top.visible {
     opacity: 1;
     visibility: visible;
+    transform: translateY(0) scale(1);
 }
 
 .back-to-top:hover {
     background: var(--primary-red);
-    transform: translateY(-5px);
+    transform: translateY(-5px) scale(1.1);
 }
 
 /* لوحة التحكم السرية */
@@ -1196,21 +1284,44 @@ footer {
     color: var(--gold);
 }
 
+/* الإشعارات */
+.notification {
+    font-family: 'Cairo', sans-serif;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    direction: rtl;
+}
+
+.notification i {
+    font-size: 20px;
+}
+
+.notification-success {
+    background: #4CAF50;
+}
+
+.notification-error {
+    background: #f44336;
+}
+
 /* الألوان الموسمية */
 body.ramadan .offer-card {
     border-color: var(--ramadan);
+    box-shadow: 0 0 20px rgba(107, 45, 92, 0.3);
 }
 
 body.eid .offer-card {
     border-color: var(--eid);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
 }
 
 body.winter .offer-card {
     border-color: var(--winter);
+    box-shadow: 0 0 20px rgba(44, 62, 80, 0.3);
 }
 
 body.summer .offer-card {
     border-color: var(--summer);
+    box-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
 }
 
 /* تحميل تدريجي للصور */
@@ -1223,9 +1334,66 @@ img.loaded {
     opacity: 1;
 }
 
-/* نقاط التوقف (Responsive) */
+/* تحسينات التمرير */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--glass-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-red);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ff0a16;
+}
+
+/* تأثيرات الحركة */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* تحسينات للهاتف */
 @media (max-width: 767px) {
+    .container {
+        padding: 10px;
+    }
+    
     .navbar {
+        padding: 10px 15px;
+        margin-bottom: 20px;
         flex-direction: column;
         align-items: stretch;
     }
@@ -1242,9 +1410,24 @@ img.loaded {
     
     .nav-items.active {
         display: flex;
+        position: fixed;
+        top: 80px;
+        right: 0;
+        width: 80%;
+        height: 100vh;
+        background: var(--darker-black);
+        z-index: 99;
+        padding: 30px;
+        box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        animation: slideInRight 0.3s ease;
+        backdrop-filter: blur(10px);
     }
     
     .logo {
+        font-size: 20px;
+    }
+    
+    .section-title {
         font-size: 24px;
     }
     
@@ -1254,11 +1437,12 @@ img.loaded {
     }
     
     .countdown-text {
-        font-size: 20px;
+        font-size: 16px;
     }
     
     .countdown-timer {
-        font-size: 28px;
+        font-size: 24px;
+        padding: 8px 15px;
     }
     
     .welcome-message {
@@ -1279,24 +1463,117 @@ img.loaded {
     }
     
     .offer-card {
-        margin: 0 10px;
+        margin: 0 5px;
+    }
+    
+    .offer-price {
+        font-size: 24px;
+    }
+    
+    .posters-slider {
+        gap: 10px;
+        padding: 10px 5px;
+    }
+    
+    .poster-item {
+        min-width: 150px;
+        height: 225px;
+    }
+    
+    .poster-nav {
+        position: sticky;
+        bottom: 20px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        padding: 10px;
+        border-radius: 50px;
+        z-index: 10;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .social-links {
+        justify-content: center;
+    }
+    
+    .footer-section ul li a {
+        justify-content: center;
+    }
+    
+    .warning-box {
+        font-size: 14px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .testimonial-card {
+        padding: 15px;
+    }
+    
+    .faq-item {
+        padding: 15px;
     }
 }
 
+/* تحسينات للتابلت */
 @media (min-width: 768px) and (max-width: 1023px) {
+    .container {
+        padding: 15px;
+    }
+    
     .offers-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
     }
     
     .poster-item {
         min-width: 180px;
         height: 270px;
     }
+    
+    .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
+/* تحسينات للكمبيوتر */
 @media (min-width: 1024px) {
+    .container {
+        padding: 20px;
+    }
+    
     .offers-grid {
         grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+    }
+}
+
+/* تحسينات الأداء */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* تحسينات للطباعة */
+@media print {
+    .stars, .twinkling, .sound-toggle, .back-to-top, .scroll-progress {
+        display: none;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .offer-card {
+        break-inside: avoid;
+        border: 1px solid #ddd;
     }
 }
 
@@ -1313,11 +1590,6 @@ img.loaded {
     -webkit-text-fill-color: transparent;
 }
 
-/* تحسينات الأداء */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
+.vip-pulse {
+    animation: pulse 2s ease-in-out infinite;
+         }
